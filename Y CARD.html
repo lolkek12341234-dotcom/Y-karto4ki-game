@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Я Карточки</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --panel: #ffffff;
+    --border: #ececec;
+    --border-strong: #d8d8d8;
+    --text: #0f0f0f;
+    --text-secondary: #565656;
+    --text-muted: #9a9a9a;
+    --red: #ee3322;
+    --red-dark: #cc2418;
+    --red-soft: #fde8e5;
+    --black: #0a0a0a;
+    --green: #2e7d32;
+    --green-soft: #e8f5e9;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.07);
+    --shadow-lg: 0 16px 48px rgba(0,0,0,0.10);
+    --radius-lg: 20px;
+    --radius: 14px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    background:
+      radial-gradient(circle at 8% 12%, rgba(238,51,34,0.06), transparent 35%),
+      radial-gradient(circle at 92% 88%, rgba(238,51,34,0.05), transparent 35%),
+      radial-gradient(circle at 85% 8%, rgba(238,51,34,0.03), transparent 30%),
+      radial-gradient(circle at 15% 90%, rgba(238,51,34,0.03), transparent 30%),
+      var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    padding: 32px 24px;
+  }
+
+  /* ===================== СТАРТОВЫЙ ЭКРАН ===================== */
+  #start-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 64px);
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .side-panel {
+    background: var(--panel);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 24px;
+    width: 240px;
+    flex-shrink: 0;
+  }
+
+  .side-title {
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text);
+  }
+
+  .stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #f7f7f7;
+    border-radius: var(--radius-sm);
+    margin-bottom: 14px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .stat-row .stat-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--red);
+  }
+
+  .outline-btn {
+    width: 100%;
+    padding: 11px 16px;
+    background: transparent;
+    border: 1.5px solid var(--red);
+    color: var(--red);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    font-family: inherit;
+  }
+
+  .outline-btn:hover {
+    background: var(--red);
+    color: #fff;
+  }
+
+  .main-card {
+    background: var(--panel);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 40px 44px;
+    width: 100%;
+    max-width: 520px;
+    flex-shrink: 0;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+
+  .ya-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--red);
+    color: #fff;
+    border-radius: 12px;
+    width: 56px;
+    height: 56px;
+    font-size: 36px;
+    font-weight: 900;
+    line-height: 1;
+    padding-bottom: 3px;
+    flex-shrink: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    box-shadow: 0 6px 20px rgba(238,51,34,0.25);
+  }
+
+  .brand-text {
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+
+  .setup-title {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .setup-hint {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 26px;
+    line-height: 1.5;
+  }
+
+  .field-label {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  #name-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .name-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .name-input {
+    flex: 1;
+    padding: 13px 16px;
+    font-size: 15px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: #fafafa;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s, background 0.15s;
+    font-family: inherit;
+    min-width: 0;
+  }
+
+  .name-input:focus {
+    border-color: var(--red);
+    background: #fff;
+  }
+
+  .name-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .remove-player {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    background: #f2f2f2;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+  }
+
+  .remove-player:hover {
+    background: var(--red-soft);
+    color: var(--red);
+  }
+
+  .add-player-btn {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1.5px dashed var(--border-strong);
+    border-radius: var(--radius-sm);
+    color: var(--red);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    margin-bottom: 22px;
+    font-family: inherit;
+  }
+
+  .add-player-btn:hover {
+    border-color: var(--red);
+    background: var(--red-soft);
+  }
+
+  .primary-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+    font-family: inherit;
+    letter-spacing: 0.3px;
+    box-shadow: 0 6px 20px rgba(238,51,34,0.25);
+  }
+
+  .primary-btn:hover {
+    background: var(--red-dark);
+    box-shadow: 0 8px 26px rgba(238,51,34,0.35);
+  }
+
+  .primary-btn:active {
+    transform: scale(0.99);
+  }
+
+  .primary-btn:disabled {
+    background: #d5d5d5;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  .top-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .top-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #f7f7f7;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+  }
+
+  .top-item .top-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .top-item .top-score {
+    font-weight: 800;
+    color: var(--red);
+  }
+
+  .empty-hint {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 16px;
+  }
+
+  /* ===================== ИГРОВОЙ ЭКРАН ===================== */
+  #game-screen {
+    display: none;
+  }
+
+  body.game-active {
+    overflow: hidden;
+    padding: 16px 20px;
+  }
+
+  .game-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    gap: 12px;
+  }
+
+  .ya-badge-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--red);
+    color: #fff;
+    border-radius: 9px;
+    width: 40px;
+    height: 40px;
+    font-size: 26px;
+    font-weight: 900;
+    line-height: 1;
+    padding-bottom: 2px;
+    font-family: Arial, sans-serif;
+  }
+
+  .game-title-text {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: -0.3px;
+    text-transform: uppercase;
+  }
+
+  .score-chips {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .score-chip {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .score-chip .chip-score {
+    color: var(--red);
+    font-weight: 800;
+  }
+
+  .score-chip.active {
+    border-color: var(--red);
+    background: var(--red-soft);
+    box-shadow: 0 4px 14px rgba(238,51,34,0.15);
+  }
+
+  .controls {
+    text-align: center;
+    margin-bottom: 14px;
+  }
+
+  .shuffle-btn {
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    background: var(--black);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    font-family: inherit;
+    letter-spacing: 0.3px;
+  }
+
+ .menu-btn {
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+    letter-spacing: 0.3px;
+    margin-left: 10px;
+  }
+
+  .menu-btn:hover {
+    background: #f0f0f0;
+    border-color: var(--text-secondary);
+    color: var(--text);
+  }
+
+  .menu-btn:active {
+    transform: scale(0.98);
+  }
+
+  .shuffle-btn:hover { opacity: 0.85; }
+  .shuffle-btn:active { transform: scale(0.98); }
+  .shuffle-btn:disabled {
+    background: #c5c5c5;
+    cursor: not-allowed;
+  }
+
+  .grid-wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    height: calc(100vh - 210px);
+    min-height: 400px;
+  }
+
+  #game-container {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    gap: 8px;
+    height: 100%;
+  }
+
+  .card {
+    perspective: 1000px;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.05s ease-out;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    transform-style: preserve-3d;
+  }
+
+  .card.flipped .card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(11px, 1vw, 15px);
+    line-height: 1.2;
+    font-weight: 700;
+    user-select: none;
+    padding: 8px;
+    text-align: center;
+    word-break: break-word;
+    overflow: hidden;
+    transition: box-shadow 0.15s, border-color 0.15s;
+  }
+
+  .front {
+    background: var(--panel);
+    color: var(--text);
+    border: 1.5px solid var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card:not(.flipped):not(.answered):hover .front {
+    border-color: var(--red);
+    box-shadow: 0 4px 14px rgba(238,51,34,0.15);
+  }
+
+  .back {
+    background: var(--red);
+    color: #fff;
+    transform: rotateY(180deg);
+    border: 1.5px solid var(--red);
+  }
+
+  .card.answered { cursor: default; }
+
+  .card.answered .front {
+    background: var(--green-soft);
+    color: var(--green);
+    border-color: #a5d6a7;
+  }
+
+  .card.answered .back {
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  .card.answered::after {
+    content: "✓";
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 24px;
+    height: 24px;
+    background: var(--green);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 14px;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    z-index: 10;
+  }
+
+  /* ===================== МОДАЛКА ===================== */
+  #modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 15, 15, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.2s ease;
+  }
+
+  #modal-overlay.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .modal-card {
+    width: 520px;
+    max-width: 100%;
+    height: 440px;
+    perspective: 1200px;
+    position: relative;
+  }
+
+  .modal-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  }
+
+  .modal-card.flipped .modal-card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .modal-face {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 32px;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .modal-front {
+    background: var(--panel);
+    border: 2px solid var(--red);
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--text);
+    text-align: center;
+    word-break: break-word;
+    line-height: 1.2;
+  }
+
+  .modal-back {
+    background: var(--panel);
+    border: 2px solid var(--red);
+    transform: rotateY(180deg);
+    overflow-y: auto;
+    justify-content: center;
+    color: var(--text);
+  }
+
+  .modal-word {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--red);
+    margin-bottom: 8px;
+    text-align: center;
+    word-break: break-word;
+    line-height: 1.2;
+  }
+
+  .modal-back .description {
+    font-size: 15px;
+    margin-top: 14px;
+    line-height: 1.55;
+    max-width: 420px;
+    text-align: center;
+    color: var(--text-secondary);
+    display: none;
+  }
+
+  .modal-back .description.visible {
+    display: block;
+    animation: fadeIn 0.25s ease;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 26px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .modal-btn {
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+    letter-spacing: 0.2px;
+  }
+
+  .modal-show { background: #f0f0f0; color: var(--text); }
+  .modal-show:hover { background: #e2e2e2; }
+  .modal-show:disabled { opacity: 0.5; cursor: default; }
+
+  .modal-wrong { background: #f0f0f0; color: var(--text); }
+  .modal-wrong:hover { background: #e2e2e2; }
+
+  .modal-right {
+    background: var(--red);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(238,51,34,0.25);
+  }
+  .modal-right:hover { background: var(--red-dark); }
+
+  .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    background: #f0f0f0;
+    color: var(--text);
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    font-family: inherit;
+    line-height: 1;
+  }
+
+  .close-btn:hover { background: #e2e2e2; }
+
+  .progress-wrap {
+    max-width: 1400px;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 4px;
+  }
+  .progress-bar {
+    flex: 1;
+    height: 8px;
+    background: #ececec;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--red);
+    border-radius: 4px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .progress-label {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    min-width: 60px;
+    text-align: right;
+  }
+
+  .score-pop {
+    position: fixed;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--red);
+    pointer-events: none;
+    z-index: 2000;
+    animation: scorePop 1s ease forwards;
+    transform: translate(-50%, 0);
+    text-shadow: 0 2px 8px rgba(255,255,255,0.8);
+  }
+  @keyframes scorePop {
+    0%   { opacity: 0; transform: translate(-50%, 0) scale(0.5); }
+    30%  { opacity: 1; transform: translate(-50%, -12px) scale(1.25); }
+    100% { opacity: 0; transform: translate(-50%, -60px) scale(1); }
+  }
+
+  /* ===================== ЭКРАН ПОБЕДИТЕЛЯ ===================== */
+  #finish-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 998;
+    background:
+      radial-gradient(circle at 50% 30%, rgba(238,51,34,0.10), transparent 55%),
+      var(--bg);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
+  }
+
+  #finish-screen.active { display: flex; }
+
+  .finish-card {
+    background: var(--panel);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 44px 48px;
+    max-width: 520px;
+    width: 100%;
+    text-align: center;
+    animation: finishIn 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+  }
+
+  @keyframes finishIn {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .finish-emoji {
+    font-size: 72px;
+    line-height: 1;
+    margin-bottom: 12px;
+    animation: trophyBounce 1s ease infinite alternate;
+  }
+
+  @keyframes trophyBounce {
+    from { transform: translateY(0) rotate(-4deg); }
+    to { transform: translateY(-8px) rotate(4deg); }
+  }
+
+  .finish-title {
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    margin-bottom: 22px;
+    color: var(--text);
+  }
+
+  .finish-subtitle {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .finish-winner {
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--red);
+    margin-bottom: 14px;
+    word-break: break-word;
+    line-height: 1.1;
+  }
+
+  .finish-score {
+    font-size: 56px;
+    font-weight: 900;
+    color: var(--text);
+    line-height: 1;
+    letter-spacing: -2px;
+  }
+
+  .finish-score-label {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-top: 6px;
+    margin-bottom: 28px;
+  }
+
+  .finish-rating {
+    border-top: 1.5px solid var(--border);
+    padding-top: 20px;
+    margin-bottom: 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .finish-rating-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #f7f7f7;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    transition: background 0.2s;
+  }
+
+  .finish-rating-item.is-winner {
+    background: var(--red-soft);
+    border: 1.5px solid var(--red);
+  }
+
+  .finish-rating-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .finish-rating-place {
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #e5e5e5;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+
+  .finish-rating-item.is-winner .finish-rating-place {
+    background: var(--red);
+    color: #fff;
+  }
+
+  .finish-rating-score {
+    font-weight: 800;
+    color: var(--red);
+  }
+
+  .finish-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .finish-actions .primary-btn,
+  .finish-actions .outline-btn {
+    flex: 1;
+    margin: 0;
+  }
+
+  /* ===================== АДАПТИВ ===================== */
+  @media (max-width: 1280px) {
+    #game-container {
+      grid-template-columns: repeat(7, 1fr);
+      grid-template-rows: repeat(8, 1fr);
+    }
+  }
+
+  @media (max-width: 1000px) {
+    #start-screen { flex-direction: column; }
+    .side-panel { width: 100%; max-width: 520px; }
+  }
+
+  @media (max-width: 900px) {
+    #game-container {
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(10, 1fr);
+    }
+    .grid-wrap { height: auto; min-height: 70vh; }
+    body.game-active { overflow: auto; }
+  }
+
+  @media (max-width: 700px) {
+    body { padding: 16px; }
+    .main-card { padding: 28px 22px; }
+    .brand-text { font-size: 24px; }
+    .ya-badge { width: 46px; height: 46px; font-size: 28px; border-radius: 10px; }
+    .setup-title { font-size: 18px; }
+    .game-title-text { font-size: 18px; }
+    #game-container {
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(14, 1fr);
+    }
+    .face { font-size: clamp(10px, 2.4vw, 13px); padding: 5px; }
+    .score-chip { padding: 8px 12px; font-size: 12px; }
+    .modal-card { height: 460px; }
+    .modal-front { font-size: 26px; }
+    .modal-word { font-size: 22px; }
+  }
+   .modal-timer {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--red);
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: 24px;
+    font-size: 18px;
+    font-weight: 800;
+    z-index: 1001;
+    box-shadow: 0 6px 20px rgba(238,51,34,0.4);
+    letter-spacing: 0.5px;
+    transition: background 0.3s, transform 0.2s;
+  }
+  .modal-timer.warning {
+    background: #b71c1c;
+    animation: timerPulse 0.8s infinite;
+  }
+  @keyframes timerPulse {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50%      { transform: translateX(-50%) scale(1.1); }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ===================== СТАРТОВЫЙ ЭКРАН ===================== -->
+<div id="start-screen">
+  <aside class="side-panel">
+    <h3 class="side-title">📊 Статистика</h3>
+    <div class="stat-row">
+      <span>Сыграно игр</span>
+      <span class="stat-value" id="games-played">0</span>
+    </div>
+    <button class="outline-btn" id="reset-stats">Сбросить счётчик</button>
+  </aside>
+
+  <div class="main-card">
+    <div class="brand">
+      <span class="ya-badge">Я</span>
+      <span class="brand-text">Карточки</span>
+    </div>
+
+    <h2 class="setup-title">Настройка игры</h2>
+    <p class="setup-hint">Добавьте игроков и начните игру. Каждая угаданная карточка — 100 баллов.</p>
+
+    <label class="field-label">Игроки</label>
+    <div id="name-inputs"></div>
+    <button class="add-player-btn" id="add-player">+ Добавить игрока</button>
+    <button class="primary-btn" id="start-btn">Начать игру</button>
+  </div>
+
+  <aside class="side-panel">
+    <h3 class="side-title">🏆 Топ игроков</h3>
+    <div class="top-list" id="top-players"></div>
+    <button class="outline-btn" id="reset-top">Сбросить результаты</button>
+  </aside>
+</div>
+
+<!-- ===================== ИГРОВОЙ ЭКРАН ===================== -->
+<div id="game-screen">
+  <header class="game-header">
+    <span class="ya-badge-sm">Я</span>
+    <span class="game-title-text">Карточки</span>
+  </header>
+
+  <div class="score-chips" id="score-chips"></div>
+
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 / 0</span>
+  </div>
+
+  <div class="controls">
+    <button class="shuffle-btn" id="shuffleBtn">Перемешать</button>
+    <button class="menu-btn" id="menuBtn">← В главное меню</button>
+  </div>
+
+  <div class="grid-wrap">
+    <div id="game-container"></div>
+  </div>
+</div>
+
+<!-- ===================== ЭКРАН ПОБЕДИТЕЛЯ ===================== -->
+<div id="finish-screen">
+  <div class="finish-card">
+    <div class="finish-emoji">🏆</div>
+    <h2 class="finish-title">Игра завершена!</h2>
+    <p class="finish-subtitle">Победитель</p>
+    <div class="finish-winner" id="finish-winner">—</div>
+    <div class="finish-score" id="finish-score">0</div>
+    <div class="finish-score-label">баллов</div>
+
+    <div class="finish-rating" id="finish-rating"></div>
+
+    <div class="finish-actions">
+      <button class="primary-btn" id="finish-again">Играть снова</button>
+      <button class="outline-btn" id="finish-menu">В меню</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== МОДАЛКА ===================== -->
+<div id="modal-overlay">
+  <div class="modal-timer" id="modal-timer">⏱ 60</div>
+  <div class="modal-card" id="modal-card">
+    <button class="close-btn" id="close-btn">&times;</button>
+    <div class="modal-card-inner" id="modal-card-inner">
+      <div class="modal-face modal-front" id="modal-front"></div>
+      <div class="modal-face modal-back" id="modal-back"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ===================== СЛОВА =====================
+  const words = [
+    { en: "Navigate to.", ru: "Navigate to.", desc: "." },
+    { en: "Open in Panoramas", ru: "Open in Panoramas", desc: "Открывает список перехода на панорамы SDC, Yandex и Google." },
+    { en: "GEOTIFF", ru: "GEOTIFF", desc: "Выбор отображаемого слоя в карте геотиффов (None — отключает слой; Intensity — с шумами; Density — без шумов)." },
+    { en: "Time Machine", ru: "Time Machine", desc: "Позволяет понять, что было с роботом в конкретный промежуток времени с точностью до секунды." },
+    { en: "Enable Follow Rover", ru: "Enable Follow Rover", desc: "Функция центрирования робота по центру карты." },
+    { en: "Accept", ru: "Accept", desc: "принимает назначенный реквест." },
+    { en: "Take control", ru: "Take control", desc: "переводит в режим ручного управления." },
+    { en: "Return Auto", ru: "Return Auto", desc: "нажатие возвращает в автоматический режим." },
+    { en: "Parking", ru: "Parking", desc: "кнопка плавной остановки робота. При нажатии на эту кнопку движущийся робот начинает плавно останавливаться в доступном месте." },
+    { en: "Restart profile", ru: "Restart profile", desc: "перезапускает активный профиль робота." },
+    { en: "Dynamic homing", ru: "Dynamic homing", desc: "ручная локализация робота." },
+    { en: "Reset current limiter", ru: "Reset current limiter", desc: "кнопка сброса напряжения с колес." },
+    { en: "Send report", ru: "Send report", desc: "открывает окно создания репорта." },
+    { en: "Set manual mode", ru: "Set manual mode", desc: "переводит робота в режим Manual, в котором расслабляются колеса, и робота можно толкать." },
+    { en: "Accepted order", ru: "Accepted order", desc: "Заказ принят, строит маршрут к пункту выдачи заказа (ПВЗ)." },
+    { en: "Arrived", ru: "Arrived", desc: "Ожидает заказа у ПВЗ." },
+    { en: "Heading to", ru: "Heading to", desc: "После закрытия крышки строит маршрут к клиенту." },
+    { en: "Returning to", ru: "Returning to", desc: "Возвращается к ПВЗ." },
+    { en: "Type", ru: "Type", desc: "строка для выбора вида полигона." },
+    { en: "Time to live", ru: "Time to live", desc: "время жизни полигона." },
+    { en: "Traffic light", ru: "Traffic light", desc: "Робот приближается к регулируемому пешеходному переходу. Реквест отправляется резолверу, когда робот на расстоянии ~1 метра от перехода." },
+    { en: "Crosswalk", ru: "Crosswalk", desc: "Робот приближается к нерегулируемому пешеходному переходу. Реквест отправляется резолверу, когда робот на расстоянии ~1 метра от перехода." },
+    { en: "Stuck Common", ru: "Stuck Common", desc: "Робот должен двигаться к конечной точке, но по какой-то причине этого не делает." },
+    { en: "Stuck For a long time", ru: "Stuck For a long time", desc: "Робот стоит застрявшим более 4 минут." },
+    { en: "Stuck Traffic Lights", ru: "Stuck Traffic Lights", desc: "Робот стоит на светофоре и за последние 2 минуты видел зелёный меньше 10 секунд." },
+    { en: "Take rover control for stuck resolving", ru: "Take rover control for stuck resolving", desc: "Робот застрял. В последние секунды движения слишком близко подъехал к объекту (статике). Возможно ложная статика." },
+    { en: "Can't build path, take rover control", ru: "Can't build path, take rover control", desc: "Есть маршрут, но робот не может построить траекторию движения." },
+    { en: "Rover cant move", ru: "Rover cant move", desc: "Робот не может двигаться в течение 5 секунд из-за застревания. Не может развернуться 15 секунд. Находится в радиусе 2 метров от препятствия 20 секунд. Приехал на точку, но не завершил маршрут." },
+    { en: "Parktronics stop engaged", ru: "Parktronics stop engaged", desc: "Препятствие чересчур близко к роботу, сработали парктроники." },
+    { en: "Routing failure", ru: "Routing failure", desc: "Робот не может построить маршрут." },
+    { en: "Robot is staled", ru: "Robot is staled", desc: "Более 30 секунд нет связи с роботом. Только у роботов с заказом или маршрутом." },
+    { en: "Important", ru: "Important", desc: "Пометка Important обозначает нахождение робота в опасном месте. Необходимо быстро обеспечить безопасность робота, следуя регламенту." },
+    { en: "Incident detected", ru: "Incident detected", desc: "Сработал Incident detector. Во время выгрузки видео высвечивается критическая ошибка." },
+    { en: "Child has disappeared", ru: "Child has disappeared", desc: "Рядом с роботом находится ребенок, который попал в «слепую» зону датчиков." },
+    { en: "Localization", ru: "Localization", desc: "" },
+    { en: "Паника", ru: "Паника", desc: "сигнал о том, что какая-то подсистема работает некорректно и необходимо вмешательство в работу автопилота." },
+    { en: "АВС", ru: "АВС", desc: "каталог сервисов Яндекса." },
+    { en: "Баг", ru: "Баг", desc: "ошибка." },
+    { en: "Base point", ru: "Base point", desc: "точка на карте локации с атрибутом base. Место стоянки робота в ожидании заказов." },
+    { en: "Blockage", ru: "Blockage", desc: "полигон на полосы робота, запрещает планеру прокладывать маршрут через область." },
+    { en: "ICP", ru: "ICP", desc: "показания лидарной локализации." },
+    { en: "Request", ru: "Request", desc: "запрос, требующий решения от оператора." },
+    { en: "Static", ru: "Static", desc: "полигон, создаёт искусственную статику (например, чтобы объехать сугроб или яму)." },
+    { en: "False", ru: "False", desc: "помечает реквест как ошибочно сформированный и закрывает его." },
+    { en: "Incorrect status", ru: "Incorrect status", desc: "У робота некорректный статус заказа." },
+    { en: "/RoverChassis/Wheels", ru: "/RoverChassis/Wheels", desc: "крит связан с шасси." },
+    { en: "/RoverChassis/Lighting", ru: "/RoverChassis/Lighting", desc: "крит связан с элементами освещения на роботе." },
+    { en: "/RoverChassis/TechLid/BootLid:", ru: "/RoverChassis/TechLid/BootLid:", desc: "крит связан с внутренней крышкой почтового отсека." },
+    { en: "/Sensors/Lidars", ru: "/Sensors/Lidars", desc: "крит связан с лидаром." },
+    { en: "Яндексовый жучок", ru: "Яндексовый жучок", desc: "кнопка для отправки репорта о проблемах." },
+    { en: "RCC", ru: "RCC", desc: "Remote Control Cloud — набор инструментов для наблюдения и управления автономным транспортом: роботами и машинами." },
+    { en: "Approve", ru: "Approve", desc: "кнопка для разрешения проезда роботу по ПП." },
+    { en: "Shift", ru: "Shift", desc: "рабочая смена оператора. Открывается в начале дня и закрывается по завершении работы." },
+    { en: "Order", ru: "Order", desc: "заказ на доставку. Создаётся клиентом, назначается роботу и сопровождается до вручения." },
+    { en: "Charging", ru: "Charging", desc: "процесс зарядки робота. Автоматически едет на станцию при низком заряде батареи." },
+    { en: "Route", ru: "Route", desc: "маршрут движения робота от старта до точки назначения, построенный с учётом полигонов и полос." }
+  ];
+
+  // ===================== УТИЛИТЫ =====================
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, m => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[m]);
+  }
+
+  // ===================== СОСТОЯНИЕ =====================
+  const players = [];
+  let currentPlayerIndex = 0;
+  let activeCard = null;
+  let modalOpen = false;
+  let answeredCount = 0;
+  let turnTimer = null;
+  let turnTimeLeft = 60;
+
+  // ===================== СОХРАНЕНИЕ ИГРЫ =====================
+  const GAME_STATE_KEY = 'ya_kart_game_state';
+
+  function saveGameState() {
+    if (!document.body.classList.contains('game-active')) return;
+    const state = {
+      active: true,
+      players: players.map(p => ({ name: p.name, score: p.score })),
+      currentPlayerIndex,
+      answeredCount,
+      cards: cardsElements.map(c => ({
+        index: parseInt(c.dataset.index, 10),
+        answered: c.classList.contains('answered')
+      }))
+    };
+    localStorage.setItem(GAME_STATE_KEY, JSON.stringify(state));
+  }
+
+  function loadGameState() {
+    try { return JSON.parse(localStorage.getItem(GAME_STATE_KEY)); }
+    catch { return null; }
+  }
+
+  function clearGameState() {
+    localStorage.removeItem(GAME_STATE_KEY);
+  }
+
+  const savedState = loadGameState();
+
+
+  // ===================== LOCALSTORAGE =====================
+  function getStats() {
+    try { return JSON.parse(localStorage.getItem('ya_kart_stats')) || { gamesPlayed: 0 }; }
+    catch { return { gamesPlayed: 0 }; }
+  }
+  function saveStats(s) { localStorage.setItem('ya_kart_stats', JSON.stringify(s)); }
+
+  function getTop() {
+    try { return JSON.parse(localStorage.getItem('ya_kart_top')) || []; }
+    catch { return []; }
+  }
+  function saveTop(t) { localStorage.setItem('ya_kart_top', JSON.stringify(t)); }
+
+  function renderStats() {
+    document.getElementById('games-played').textContent = getStats().gamesPlayed;
+  }
+
+  function renderTop() {
+    const t = getTop();
+    const wrap = document.getElementById('top-players');
+    if (t.length === 0) {
+      wrap.innerHTML = '<div class="empty-hint">Пока нет результатов</div>';
+      return;
+    }
+    const medals = ['🥇', '🥈', '🥉'];
+    wrap.innerHTML = t.slice(0, 5).map((p, i) => `
+      <div class="top-item">
+        <span class="top-name">${medals[i] || '•'} ${escapeHtml(p.name)}</span>
+        <span class="top-score">${p.score}</span>
+      </div>
+    `).join('');
+  }
+
+  // ===================== СТАРТОВЫЙ ЭКРАН =====================
+  const startScreen = document.getElementById('start-screen');
+  const gameScreen = document.getElementById('game-screen');
+  const startBtn = document.getElementById('start-btn');
+  const nameInputsWrap = document.getElementById('name-inputs');
+  const addPlayerBtn = document.getElementById('add-player');
+
+  let playerCount = 0;
+
+  function addNameInput() {
+    if (playerCount >= 10) return;
+    playerCount++;
+    const row = document.createElement('div');
+    row.className = 'name-row';
+    row.innerHTML = `
+      <input type="text" class="name-input" maxlength="20" placeholder="Имя игрока ${playerCount}" />
+      <button class="remove-player" title="Удалить">✕</button>
+    `;
+    row.querySelector('.remove-player').addEventListener('click', () => {
+      if (playerCount <= 1) return;
+      row.remove();
+      playerCount--;
+      updateRemoveButtons();
+    });
+    nameInputsWrap.appendChild(row);
+    updateRemoveButtons();
+  }
+
+  function updateRemoveButtons() {
+    const rows = nameInputsWrap.querySelectorAll('.name-row');
+    rows.forEach(r => {
+      r.querySelector('.remove-player').style.display = rows.length <= 1 ? 'none' : '';
+    });
+  }
+
+  addPlayerBtn.addEventListener('click', addNameInput);
+  addNameInput(); // стартуем с 1 поля
+
+  startBtn.addEventListener('click', () => {
+    const inputs = nameInputsWrap.querySelectorAll('.name-input');
+    players.length = 0;
+    const usedNames = {};
+    inputs.forEach((input, i) => {
+      let name = input.value.trim() || `Игрок ${i + 1}`;
+      if (usedNames[name]) {
+        usedNames[name]++;
+        name = `${name} (${usedNames[name]})`;
+      } else {
+        usedNames[name] = 1;
+      }
+      players.push({ name, score: 0 });
+    });
+    currentPlayerIndex = 0;
+    renderScoreChips();
+
+    // Считаем сыгранные игры
+    const s = getStats();
+    s.gamesPlayed += 1;
+    saveStats(s);
+
+    startScreen.style.display = 'none';
+    gameScreen.style.display = 'block';
+    document.body.classList.add('game-active');
+    saveGameState();
+  });
+
+  // ===================== ЧИПЫ ИГРОКОВ =====================
+  const scoreChips = document.getElementById('score-chips');
+
+    function updateProgress() {
+    const total = words.length;
+    const fill = document.getElementById('progress-fill');
+    const label = document.getElementById('progress-label');
+    if (!fill) return;
+    const pct = total ? (answeredCount / total) * 100 : 0;
+    fill.style.width = pct + '%';
+    label.textContent = `${answeredCount} / ${total}`;
+  }
+
+    function animateScoreGain(playerIndex) {
+    const chip = scoreChips.children[playerIndex];
+    if (!chip) return;
+    const rect = chip.getBoundingClientRect();
+    const el = document.createElement('div');
+    el.className = 'score-pop';
+    el.textContent = '+100';
+    el.style.left = (rect.left + rect.width / 2) + 'px';
+    el.style.top = rect.top + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1000);
+  }
+
+
+  function renderScoreChips() {
+    scoreChips.innerHTML = '';
+    players.forEach((p, i) => {
+      const chip = document.createElement('div');
+      chip.className = 'score-chip' + (i === currentPlayerIndex ? ' active' : '');
+      chip.innerHTML = `
+        <span class="chip-name">${escapeHtml(p.name)}:</span>
+        <span class="chip-score">${p.score}</span>
+      `;
+      scoreChips.appendChild(chip);
+    });
+  }
+
+  // ===================== ИГРА =====================
+  const container = document.getElementById('game-container');
+  const overlay = document.getElementById('modal-overlay');
+  const modalFront = document.getElementById('modal-front');
+  const modalBack = document.getElementById('modal-back');
+  const closeBtn = document.getElementById('close-btn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+
+  let cardsElements = [];
+
+words.forEach((item, index) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    // Восстанавливаем состояние карточки из сохранения
+    let cardIndex = index;
+    let cardAnswered = false;
+    if (savedState && savedState.cards && savedState.cards[index]) {
+      cardIndex = savedState.cards[index].index;
+      cardAnswered = savedState.cards[index].answered;
+    }
+    const wordItem = words[cardIndex];
+
+    card.dataset.index = cardIndex;
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="face front">${escapeHtml(wordItem.en)}</div>
+        <div class="face back">${escapeHtml(wordItem.ru)}</div>
+      </div>
+    `;
+
+    if (cardAnswered) {
+      card.classList.add('answered');
+      card.classList.add('flipped');
+    }
+
+
+    card.addEventListener('click', () => {
+      if (modalOpen) return;
+      if (card.classList.contains('answered')) return;
+
+      activeCard = card;
+      const w = words[parseInt(card.dataset.index, 10)];
+
+      modalFront.textContent = w.en;
+      modalBack.innerHTML = `
+        <div class="modal-word">${escapeHtml(w.ru)}</div>
+        <div class="description" id="modal-desc">${escapeHtml(w.desc)}</div>
+        <div class="modal-actions">
+          <button class="modal-btn modal-show" id="btn-show">👁 Показать ответ</button>
+          <button class="modal-btn modal-show" id="btn-skip">⏭ Пас</button>
+          <button class="modal-btn modal-wrong" id="btn-wrong">✗ Не правильно</button>
+          <button class="modal-btn modal-right" id="btn-right">✓ Правильно</button>
+        </div>
+      `;
+
+      document.getElementById('btn-show').addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.getElementById('modal-desc').classList.add('visible');
+        e.currentTarget.disabled = true;
+      });
+              document.getElementById('btn-skip').addEventListener('click', (e) => {
+          e.stopPropagation(); handleSkip();
+        });
+      document.getElementById('btn-wrong').addEventListener('click', (e) => {
+        e.stopPropagation(); handleWrong();
+      });
+      document.getElementById('btn-right').addEventListener('click', (e) => {
+        e.stopPropagation(); handleCorrect();
+      });
+
+      card.classList.add('flipped');
+
+      const modalCard = document.getElementById('modal-card');
+      modalCard.classList.remove('flipped');
+      overlay.classList.add('active');
+      // форсируем reflow, чтобы transition сработал
+      void modalCard.offsetHeight;
+      modalCard.classList.add('flipped');
+      modalOpen = true;
+      startTurnTimer();
+    });
+
+    container.appendChild(card);
+    cardsElements.push(card);
+  });
+
+  function closeModal() {
+    stopTurnTimer();
+    overlay.classList.remove('active');
+    document.getElementById('modal-card').classList.remove('flipped');
+    modalOpen = false;
+  }
+
+ function handleCorrect() {
+    if (!activeCard) return;
+    const card = activeCard;
+
+    card.classList.add('answered');
+    answeredCount++;
+
+       animateScoreGain(currentPlayerIndex);
+    players[currentPlayerIndex].score += 100;
+    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+
+    closeModal();
+    renderScoreChips();
+    updateProgress();
+    activeCard = null;
+
+    if (answeredCount === words.length) {
+      finishGame();
+    } else {
+      saveGameState();
+    }
+  }
+
+  function handleWrong() {
+    if (!activeCard) return;
+    const card = activeCard;
+
+    card.classList.remove('flipped');
+    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+
+    closeModal();
+    renderScoreChips();
+    activeCard = null;
+    saveGameState();
+  }
+
+    function handleSkip() {
+    if (!activeCard) return;
+    const card = activeCard;
+    card.classList.remove('flipped');
+    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    closeModal();
+    renderScoreChips();
+    activeCard = null;
+    saveGameState();
+  }
+
+    function updateTimerDisplay() {
+    const el = document.getElementById('modal-timer');
+    if (!el) return;
+    el.textContent = `⏱ ${turnTimeLeft}`;
+    el.classList.toggle('warning', turnTimeLeft <= 10);
+  }
+
+  function stopTurnTimer() {
+    if (turnTimer) {
+      clearInterval(turnTimer);
+      turnTimer = null;
+    }
+  }
+
+  function startTurnTimer() {
+    stopTurnTimer();
+    turnTimeLeft = 60;
+    updateTimerDisplay();
+    turnTimer = setInterval(() => {
+      turnTimeLeft--;
+      updateTimerDisplay();
+      if (turnTimeLeft <= 0) {
+        stopTurnTimer();
+        handleTimeout();
+      }
+    }, 1000);
+  }
+
+  function handleTimeout() {
+    if (!activeCard) return;
+    const card = activeCard;
+    card.classList.remove('flipped');
+    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    closeModal();
+    renderScoreChips();
+    activeCard = null;
+    saveGameState();
+  }
+
+
+ let lastPlayerNames = [];
+
+  function finishGame() {
+    clearGameState();
+
+    // Запоминаем имена игроков для рестарта
+    lastPlayerNames = players.map(p => p.name);
+
+    // Сохраняем результаты в топ
+    const top = getTop();
+    players.forEach(p => top.push({ name: p.name, score: p.score }));
+    top.sort((a, b) => b.score - a.score);
+    saveTop(top.slice(0, 10));
+
+    // Определяем победителя (или ничью)
+    const sorted = [...players].sort((a, b) => b.score - a.score);
+    const maxScore = sorted[0].score;
+    const winners = sorted.filter(p => p.score === maxScore);
+    const isDraw = winners.length > 1;
+
+    const subtitleEl = document.querySelector('.finish-subtitle');
+    if (isDraw) {
+      subtitleEl.textContent = 'Ничья';
+      document.getElementById('finish-winner').textContent =
+        winners.map(w => w.name).join(' и ');
+    } else {
+      subtitleEl.textContent = 'Победитель';
+      document.getElementById('finish-winner').textContent = winners[0].name;
+    }
+    document.getElementById('finish-score').textContent = maxScore;
+
+    // Рейтинг всех игроков
+    const ratingWrap = document.getElementById('finish-rating');
+    ratingWrap.innerHTML = sorted.map((p, i) => `
+      <div class="finish-rating-item${p.score === maxScore ? ' is-winner' : ''}">
+        <span class="finish-rating-name">
+          <span class="finish-rating-place">${i + 1}</span>
+          ${escapeHtml(p.name)}
+        </span>
+        <span class="finish-rating-score">${p.score}</span>
+      </div>
+    `).join('');
+
+    // Показываем финальный экран
+    document.getElementById('finish-screen').classList.add('active');
+  }
+
+  // ===================== ПЕРЕМЕШИВАНИЕ =====================
+  function shuffleArray(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  async function shuffleCards() {
+    if (modalOpen) return;
+    shuffleBtn.disabled = true;
+    shuffleBtn.textContent = '🔄 Перемешиваю...';
+
+    document.querySelectorAll('.card.flipped:not(.answered)').forEach(c => c.classList.remove('flipped'));
+
+    const activeCards = cardsElements.filter(c => !c.classList.contains('answered'));
+    const indices = activeCards.map(c => parseInt(c.dataset.index, 10));
+    shuffleArray(indices);
+
+    const duration = 400, steps = 12, stepTime = duration / steps;
+    for (let step = 0; step < steps; step++) {
+      for (const card of activeCards) {
+        const rot = (Math.random() - 0.5) * 60;
+        const tx = (Math.random() - 0.5) * 40;
+        const ty = (Math.random() - 0.5) * 40;
+        card.style.transform = `rotate(${rot}deg) translate(${tx}px, ${ty}px)`;
+      }
+      await new Promise(r => setTimeout(r, stepTime));
+    }
+
+    activeCards.forEach((card, i) => {
+      const originalIndex = indices[i];
+      const item = words[originalIndex];
+      card.querySelector('.front').textContent = item.en;
+      card.querySelector('.back').textContent = item.ru;
+      card.dataset.index = originalIndex;
+      card.style.transform = 'rotate(0deg) translate(0px, 0px)';
+    });
+
+    shuffleBtn.disabled = false;
+    shuffleBtn.textContent = 'Перемешать';
+    saveGameState();
+  }
+
+  shuffleBtn.addEventListener('click', shuffleCards);
+
+  // ===================== ЗАКРЫТИЕ МОДАЛКИ =====================
+  closeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (activeCard) handleWrong();
+  });
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay && activeCard) handleWrong();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalOpen && activeCard) handleWrong();
+  });
+
+  // ===================== РЕСЕТЫ =====================
+  document.getElementById('reset-stats').addEventListener('click', () => {
+    if (confirm('Сбросить счётчик сыгранных игр?')) {
+      saveStats({ gamesPlayed: 0 });
+      renderStats();
+    }
+  });
+  document.getElementById('reset-top').addEventListener('click', () => {
+    if (confirm('Сбросить топ игроков?')) {
+      saveTop([]);
+      renderTop();
+    }
+  });
+
+    // ===================== КНОПКА В МЕНЮ =====================
+  document.getElementById('menuBtn').addEventListener('click', () => {
+    if (confirm('Вернуться в главное меню? Текущая игра будет сброшена.')) {
+      clearGameState();
+      location.reload();
+    }
+  });
+
+// ===================== ФИНАЛЬНЫЙ ЭКРАН — КНОПКИ =====================
+  function restartGame() {
+    // Если по какой-то причине имён нет — уходим в меню
+    if (!lastPlayerNames.length) {
+      location.reload();
+      return;
+    }
+
+    // Скрываем финальный экран
+    document.getElementById('finish-screen').classList.remove('active');
+
+    // Восстанавливаем игроков с нулевым счётом
+    players.length = 0;
+    lastPlayerNames.forEach(name => players.push({ name, score: 0 }));
+    currentPlayerIndex = 0;
+    answeredCount = 0;
+
+    // Перемешиваем карточки и сбрасываем их состояние
+    const indices = Array.from({ length: words.length }, (_, i) => i);
+    shuffleArray(indices);
+    cardsElements.forEach((card, i) => {
+      card.classList.remove('flipped', 'answered');
+      const idx = indices[i];
+      const item = words[idx];
+      card.dataset.index = idx;
+      card.querySelector('.front').textContent = item.en;
+      card.querySelector('.back').textContent = item.ru;
+      card.style.transform = '';
+    });
+
+    // Обновляем UI
+    renderScoreChips();
+    updateProgress();
+    saveGameState();
+  }
+
+  document.getElementById('finish-again').addEventListener('click', restartGame);
+
+  document.getElementById('finish-menu').addEventListener('click', () => {
+    location.reload();
+  });
+
+ // ===================== ИНИЦИАЛИЗАЦИЯ =====================
+  renderStats();
+  renderTop();
+
+  // ===================== ВОССТАНОВЛЕНИЕ ПАРТИИ =====================
+  if (savedState && savedState.active) {
+    players.length = 0;
+    savedState.players.forEach(p => players.push({ name: p.name, score: p.score }));
+    currentPlayerIndex = savedState.currentPlayerIndex;
+    answeredCount = savedState.answeredCount;
+
+    renderScoreChips();
+    updateProgress();
+
+    startScreen.style.display = 'none';
+    gameScreen.style.display = 'block';
+    document.body.classList.add('game-active');
+  }
+</script>
+</body>
+</html>
